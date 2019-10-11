@@ -88,4 +88,5 @@ body {
   background: white;
   font-size: 40px;
   border: 7px solid deeppink;
+  z-index: 2;
 }

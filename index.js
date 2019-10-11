@@ -108,6 +108,11 @@ const intervalId = setInterval(() => {
       winnerElement.className = 'winner';
       winnerElement.textContent = `${name} is the winner!`;
 
+      const gif = document.createElement('img');
+      gif.className = 'winner-gif';
+      gif.src = 'yes.gif';
+
+      winnerElement.appendChild(gif);
       container.appendChild(winnerElement);
     }
 

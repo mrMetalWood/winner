@@ -74,4 +74,4 @@ const intervalId = setInterval(() => {
       progress: newProgress
     };
   });
-}, 50);
+}, 200);

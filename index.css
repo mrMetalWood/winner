@@ -28,7 +28,7 @@ body {
   justify-content: flex-end;
   transform: translateX(-100%);
   padding-right: 16px;
-  transition: transform 50ms ease-out;
+  transition: transform 200ms ease-out;
 }
 
 .winner {

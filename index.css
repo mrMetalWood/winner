@@ -90,3 +90,10 @@ body {
   border: 7px solid deeppink;
   z-index: 2;
 }
+
+.reset {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+}

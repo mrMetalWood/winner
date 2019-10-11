@@ -6,6 +6,17 @@ const searchParams = [...urlSearchParams].reduce((params, [key, value]) => {
   return params;
 }, {});
 
+const resetButton = document.querySelector('.reset');
+resetButton.addEventListener('click', () => {
+  urlSearchParams.delete('seed');
+  window.history.replaceState(
+    {},
+    '',
+    `${location.pathname}?${decodeURIComponent(urlSearchParams)}`
+  );
+  window.location.reload(false);
+});
+
 let {items, seed = Date.now()} = searchParams;
 items = items.split(',');
 

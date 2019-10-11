@@ -1,5 +1,5 @@
+// get serach params from url
 const urlSearchParams = new URLSearchParams(window.location.search);
-
 const searchParams = [...urlSearchParams].reduce((params, [key, value]) => {
   params[key] = value;
 
@@ -16,56 +16,87 @@ window.history.replaceState(
   `${location.pathname}?${decodeURIComponent(urlSearchParams)}`
 );
 
-const myRandom = new Math.seedrandom(String(seed));
-
+const seedRandom = new Math.seedrandom(String(seed));
 const container = document.querySelector('.container');
 
+// shuffle items
 for (let i = items.length - 1; i > 0; i--) {
-  const j = Math.floor(myRandom() * (i + 1));
+  const j = Math.floor(seedRandom() * (i + 1));
   [items[i], items[j]] = [items[j], items[i]];
 }
 
+// create rows
 items = items.map(item => {
-  const $item = document.createElement('div');
-  $item.className = 'item';
-  $item.textContent = item;
-  const myRandom2 = new Math.seedrandom(item + String(seed));
+  const colorRandom = new Math.seedrandom(item + String(seed));
 
-  $item.style.backgroundColor = `rgb(${myRandom2() * 255},${myRandom2() *
-    255},${myRandom2() * 255})`;
+  const $item = document.createElement('div');
+  $item.style.transform = 'translateX(-100%)';
+  $item.className = 'item';
+
+  const $logoContainer = document.createElement('div');
+  $logoContainer.className = 'logo-container logo-container--hidden';
+
+  const $logo = document.createElement('img');
+  $logo.src = 'twix.png';
+  $logo.className = 'logo';
+
+  const $itemText = document.createElement('div');
+  $itemText.className = 'item-text';
+
+  const color = tinycolor(
+    `rgb(${colorRandom() * 255},${colorRandom() * 255},${colorRandom() * 255})`
+  );
+
+  $item.style.backgroundColor = color.getOriginalInput();
+
+  if (color.isDark()) {
+    $itemText.style.color = 'white';
+  } else {
+    $itemText.style.color = 'black';
+  }
+
+  const $itemTextValue = document.createElement('span');
+  $itemTextValue.className = 'item-text-value';
+  $itemTextValue.textContent = item;
+
+  $logoContainer.appendChild($logo);
+  $itemText.appendChild($logoContainer);
+  $itemText.appendChild($itemTextValue);
+  $item.appendChild($itemText);
   container.appendChild($item);
 
   return {$item, progress: 0, name: item};
 });
 
 let finished = false;
-let winner = null;
 
+// loop
 const intervalId = setInterval(() => {
   if (finished) {
     clearInterval(intervalId);
   }
 
   items = items.map(item => {
-    const percentToAdd = myRandom();
+    const {$item, progress, name} = item;
+    const percentToAdd = seedRandom();
     const newProgress = finished
-      ? item.progress
-      : Math.min(item.progress + percentToAdd, 100);
-    item.$item.style.transform = `translateX(${-100 + newProgress}%)`;
+      ? progress
+      : Math.min(progress + percentToAdd, 100);
+
+    $item
+      .querySelector('.logo-container')
+      .classList.add('logo-container--hidden');
+    $item.style.transform = `translate3d(${-100 + newProgress}%, 0, 0)`;
+    $item.style.zIndex = 0;
 
     if (newProgress === 100 && !finished) {
       finished = true;
-      winner = item.name;
-      item.$item.style.backgroundColor = 'transparent';
-      item.$item.style.backgroundImage =
-        'linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%)';
-      item.$item.style.backgroundSize = '20px 20px';
-      item.$item.style.backgroundPosition =
-        '0 0, 0 10px, 10px -10px, -10px 0px';
+      $item.classList.add('item--winner');
 
       const winnerElement = document.createElement('div');
       winnerElement.className = 'winner';
-      winnerElement.textContent = `${winner} is the winner!`;
+      winnerElement.textContent = `${name} is the winner!`;
+
       container.appendChild(winnerElement);
     }
 
@@ -74,4 +105,10 @@ const intervalId = setInterval(() => {
       progress: newProgress
     };
   });
-}, 200);
+
+  const leader = items.slice().sort((a, b) => b.progress - a.progress)[0];
+  leader.$item
+    .querySelector('.logo-container')
+    .classList.remove('logo-container--hidden');
+  leader.$item.style.zIndex = 1;
+}, 300);
